@@ -19,18 +19,29 @@ type SignResponse {
   refreshToken: String!
 }
 
+type LogoutResponse {
+  loggedOut: Boolean!
+}
+
 type Query {
   auth(id: Int!): Auth!
 }
 
 type Mutation {
   signup(signUpInput: SignUpInput!): SignResponse!
+  signin(signInInput: SignInInput!): SignResponse!
+  logout(userId: Int!): LogoutResponse!
   updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
   removeAuth(id: Int!): Auth!
 }
 
 input SignUpInput {
   username: String!
+  email: String!
+  password: String!
+}
+
+input SignInInput {
   email: String!
   password: String!
 }

@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { SignUpInput } from './dto/signup-input';
+import { SignInInput } from './dto/signin-input';
 import { UpdateAuthInput } from './dto/update-auth.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -26,7 +27,37 @@ export class AuthService {
   
     
   }
+  async signin(signInInput: SignInInput) {
+    const user = await this.prisma.user.findUnique({ where: { email: signInInput.email } })
+    if (!user) {
+       throw new ForbiddenException('Invalid credentials')
+    } else {
+      const isMatch = await argon.verify(user.hashedPassword, signInInput.password)
+      if (!isMatch) { 
+         throw new ForbiddenException('Password is not correct')
+      }
+      const {accessToken,refreshToken } = await this.createTokens(user.id,user.email)
+      return {accessToken,refreshToken,user}
+    }
+    
+  }
+  
+  async logout(userId: number) {
+    await this.prisma.user.updateMany({
+      where: {
+        id: userId,
+        hashedRefreshToken:{not:null}
+      },
+      data: {
+         hashedRefreshToken:null
+      }
+      
+    })
+    return {
+      loggedOut:true
+    }
 
+  }
   findAll() {
     return `This action returns all auth`;
   }
