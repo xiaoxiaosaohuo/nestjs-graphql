@@ -6,16 +6,18 @@ import { SignInInput } from './dto/signin-input';
 import { UpdateAuthInput } from './dto/update-auth.input';
 import { SignResponse } from './dto/sign-response';
 import { LogoutResponse } from './dto/logout-response';
-
+import {Public} from '../auth/decorators/public.decorator'
 @Resolver(() => Auth)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
-
+  constructor(private readonly authService: AuthService) { }
+  
+  @Public()
   @Mutation(() => SignResponse)
   signup(@Args('signUpInput') signUpInput: SignUpInput) {
     return this.authService.signup(signUpInput);
   }
 
+  @Public()
   @Mutation(() => SignResponse)
   signin(@Args('signInInput') signInInput: SignInInput) {
     return this.authService.signin(signInInput);
@@ -26,9 +28,10 @@ export class AuthResolver {
     return this.authService.logout(userId);
   }
 
-  @Query(() => [Auth], { name: 'auth' })
-  findAll() {
-    return this.authService.findAll();
+  @Public()
+  @Query(() => String)
+  hello() {
+    return "hello world!";
   }
 
   @Query(() => Auth, { name: 'auth' })

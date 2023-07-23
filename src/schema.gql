@@ -24,6 +24,7 @@ type LogoutResponse {
 }
 
 type Query {
+  hello: String!
   auth(id: Int!): Auth!
 }
 
