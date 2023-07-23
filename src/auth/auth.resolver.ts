@@ -7,6 +7,13 @@ import { UpdateAuthInput } from './dto/update-auth.input';
 import { SignResponse } from './dto/sign-response';
 import { LogoutResponse } from './dto/logout-response';
 import {Public} from '../auth/decorators/public.decorator'
+import { NewTokenResponse } from './dto/newTokens-response';
+import { CurrentUserId } from './decorators/currentUserId.decorator';
+import { CurrentUser } from './decorators/currentUser.decorator';
+import { UseGuards } from '@nestjs/common';
+import { RefreshTokenGuard } from './guards/refresh.guard';
+
+
 @Resolver(() => Auth)
 export class AuthResolver {
   constructor(private readonly authService: AuthService) { }
@@ -28,10 +35,14 @@ export class AuthResolver {
     return this.authService.logout(userId);
   }
 
-  @Public()
   @Query(() => String)
   hello() {
     return "hello world!";
+  }
+  @UseGuards(RefreshTokenGuard)
+  @Mutation(() => NewTokenResponse)
+  getNewTokens(@CurrentUserId() userId:number,@CurrentUser('refreshToken') refreshToken:string ) {
+    return this.authService.getNewsTokens(userId,refreshToken)
   }
 
   @Query(() => Auth, { name: 'auth' })

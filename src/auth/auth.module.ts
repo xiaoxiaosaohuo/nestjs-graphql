@@ -5,8 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { AccessTokenStrategy } from './strategies/accessToken.strategy';
-
+import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 @Module({
-  providers: [AuthResolver, AuthService,JwtService,PrismaService,AccessTokenStrategy]
+  providers: [AuthResolver, AuthService,JwtService,PrismaService,AccessTokenStrategy,RefreshTokenStrategy]
 })
 export class AuthModule {}

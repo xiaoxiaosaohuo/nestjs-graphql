@@ -49,7 +49,7 @@ export class AuthService {
         hashedRefreshToken:{not:null}
       },
       data: {
-         hashedRefreshToken:null
+        hashedRefreshToken: null,
       }
       
     })
@@ -58,6 +58,21 @@ export class AuthService {
     }
 
   }
+  async getNewsTokens(userId:number,rt:string) {
+    const user = await this.prisma.user.findUnique({where:{id:userId}})
+    if (!user || !user.hashedRefreshToken) {
+      throw new ForbiddenException('Access Denied')
+    
+    }
+    const isMatch = await argon.verify(user.hashedRefreshToken,rt)
+    if (!isMatch) { 
+      throw new ForbiddenException('Access Denied')
+    }
+    const {accessToken,refreshToken } = await this.createTokens(user.id,user.email)
+    await this.updateRefreshToken(user.id,refreshToken)
+    return {accessToken,refreshToken,user}
+  }
+  
   findAll() {
     return `This action returns all auth`;
   }
@@ -77,12 +92,12 @@ export class AuthService {
     const accessToken = this.jwtService.sign({
       userId,
       email
-    },{expiresIn:"10s",secret:this.configService.get("ACCESS_SECRET")})
+    },{expiresIn:"1d",secret:this.configService.get("ACCESS_SECRET")})
     const refreshToken = this.jwtService.sign({
       userId,
       email,
       accessToken
-    },{expiresIn:"1d",secret:this.configService.get("REFRESH_SECRET")})
+    },{expiresIn:"7d",secret:this.configService.get("REFRESH_SECRET")})
     return {accessToken,refreshToken}
   }
   async updateRefreshToken(userId: number, refreshToken: string) {

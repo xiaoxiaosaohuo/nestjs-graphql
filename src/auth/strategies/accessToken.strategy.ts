@@ -8,18 +8,19 @@ import { JwtPayload } from "../types";
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(
-        private readonly configService: ConfigService,
+        public readonly configService: ConfigService,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
             secretOrKey: configService.get('ACCESS_SECRET'),
-            passReqToCallback: true
+            // passReqToCallback: true
         
         })
     }
 
     async validate(payload: JwtPayload) {
+        console.log("validate")
         return payload
     }
 }

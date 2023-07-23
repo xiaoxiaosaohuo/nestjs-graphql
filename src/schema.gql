@@ -23,6 +23,11 @@ type LogoutResponse {
   loggedOut: Boolean!
 }
 
+type NewTokenResponse {
+  accessToken: String!
+  refreshToken: String!
+}
+
 type Query {
   hello: String!
   auth(id: Int!): Auth!
@@ -32,6 +37,7 @@ type Mutation {
   signup(signUpInput: SignUpInput!): SignResponse!
   signin(signInInput: SignInInput!): SignResponse!
   logout(userId: Int!): LogoutResponse!
+  getNewTokens: NewTokenResponse!
   updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
   removeAuth(id: Int!): Auth!
 }
